@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "pwoxy",
+  "version": "${version}",
+  "name": "Pwoxy",
+  "description": "A shwimple pwoxy mod",
+  "authors": [
+    "averithefox"
+  ],
+  "contact": {
+    "homepage": "https://github.com/averithefox/pwoxy",
+    "sources": "https://github.com/averithefox/pwoxy",
+    "issues": "https://github.com/averithefox/pwoxy/issues"
+  },
+  "license": "GPL-3.0-or-later",
+  "icon": "assets/pwoxy/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      {
+        "value": "me.averi.pwoxy.Pwoxy",
+        "adapter": "kotlin"
+      }
+    ]
+  },
+  "mixins": [
+    "pwoxy.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loaderVersion}",
+    "minecraft": "${minecraftVersion}",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*"
+  }
+}
