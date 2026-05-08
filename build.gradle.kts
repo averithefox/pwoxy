@@ -38,8 +38,13 @@ dependencies {
 
   modLocalRuntime("me.djtheredstoner:DevAuth-fabric:1.2.2")
 
-  shadowImplementation("io.netty:netty-handler-proxy:4.2.12.Final")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+  shadowImplementation("io.netty:netty-handler-proxy:4.2.12.Final") {
+    isTransitive = false
+  }
+  shadowImplementation("io.netty:netty-codec-socks:4.2.12.Final") {
+    isTransitive = false
+  }
 }
 
 loom {
