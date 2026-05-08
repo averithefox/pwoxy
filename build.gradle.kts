@@ -89,12 +89,20 @@ tasks {
   }
 
   shadowJar {
-    archiveClassifier = null
+    archiveClassifier = "dev-shadow"
+    destinationDirectory = layout.buildDirectory.dir("badjars")
+
     configurations = listOf(shadowImplementation)
 
     minimize()
 
     exclude("META-INF/maven/")
+  }
+
+  remapJar {
+    archiveClassifier = null
+    from(shadowJar)
+    inputFile = shadowJar.get().archiveFile
   }
 }
 
