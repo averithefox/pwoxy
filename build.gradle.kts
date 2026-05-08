@@ -87,6 +87,8 @@ tasks {
     archiveClassifier = null
     configurations = listOf(shadowImplementation)
 
+    minimize()
+
     exclude("META-INF/maven/")
   }
 }
