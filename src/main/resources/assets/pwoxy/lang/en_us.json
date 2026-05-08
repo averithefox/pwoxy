@@ -1,0 +1,7 @@
+{
+  "options.pwoxy": "Pwoxy",
+  "pwoxy.input.host": "Host",
+  "pwoxy.input.login": "Login",
+  "pwoxy.input.password": "Password",
+  "pwoxy.input.showPassword": "Show Password"
+}

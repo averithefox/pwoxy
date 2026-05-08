@@ -3,6 +3,10 @@
   "package": "me.averi.pwoxy.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ConnectionMixin"
+  ],
+  "client": [
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

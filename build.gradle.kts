@@ -2,8 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("net.fabricmc.fabric-loom-remap")
-  `maven-publish`
-  id("org.jetbrains.kotlin.jvm") version "2.3.21"
+  kotlin("jvm") version "2.3.21"
+  kotlin("plugin.serialization") version "2.3.21"
+  id("com.gradleup.shadow") version "9.4.1"
   id("com.github.jmongard.git-semver-plugin") version "0.18.0"
 }
 
@@ -21,6 +22,12 @@ repositories {
   maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
+val shadowImplementation by configurations.creating {
+  configurations.implementation {
+    extendsFrom(this@creating)
+  }
+}
+
 dependencies {
   minecraft("com.mojang:minecraft:$minecraftVersion")
   mappings(loom.officialMojangMappings())
@@ -30,9 +37,14 @@ dependencies {
   modImplementation("net.fabricmc:fabric-language-kotlin:$fabricKotlinVersion")
 
   modLocalRuntime("me.djtheredstoner:DevAuth-fabric:1.2.2")
+
+  shadowImplementation("io.netty:netty-handler-proxy:4.2.12.Final")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }
 
 loom {
+  accessWidenerPath = file("src/main/resources/pwoxy.accessWidener")
+
   runConfigs.named("client") {
     isIdeConfigGenerated = true
     vmArgs.addAll(
@@ -52,23 +64,30 @@ afterEvaluate {
 }
 
 tasks {
+  withType<JavaCompile>().configureEach {
+    options.release = 21
+  }
+
   processResources {
+    from(rootProject.file("LICENSE")) {
+      rename { "${it}_${project.name}" }
+    }
+
     filesMatching("fabric.mod.json") {
       expand(project.properties)
     }
   }
 
-  withType<JavaCompile>().configureEach {
-    options.release = 21
+  jar {
+    archiveClassifier = "nodeps"
+    destinationDirectory = layout.buildDirectory.dir("badjars")
   }
 
-  jar {
-    val projectName = project.name
-    inputs.property("projectName", projectName)
+  shadowJar {
+    archiveClassifier = null
+    configurations = listOf(shadowImplementation)
 
-    from("LICENSE") {
-      rename { "${it}_$projectName" }
-    }
+    exclude("META-INF/maven/")
   }
 }
 
@@ -81,16 +100,4 @@ kotlin {
 java {
   sourceCompatibility = JavaVersion.VERSION_21
   targetCompatibility = JavaVersion.VERSION_21
-}
-
-publishing {
-  publications {
-    register<MavenPublication>("mavenJava") {
-      from(components["java"])
-    }
-  }
-
-  repositories {
-    mavenLocal()
-  }
 }

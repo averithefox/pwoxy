@@ -15,14 +15,6 @@
   "license": "GPL-3.0-or-later",
   "icon": "assets/pwoxy/icon.png",
   "environment": "client",
-  "entrypoints": {
-    "client": [
-      {
-        "value": "me.averi.pwoxy.Pwoxy",
-        "adapter": "kotlin"
-      }
-    ]
-  },
   "mixins": [
     "pwoxy.mixins.json"
   ],
