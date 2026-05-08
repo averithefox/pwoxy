@@ -18,6 +18,7 @@
   "mixins": [
     "pwoxy.mixins.json"
   ],
+  "accessWidener": "pwoxy.accessWidener",
   "depends": {
     "fabricloader": ">=${loaderVersion}",
     "minecraft": "${minecraftVersion}",
