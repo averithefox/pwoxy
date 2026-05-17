@@ -101,7 +101,6 @@ tasks {
 
   remapJar {
     archiveClassifier = null
-    from(shadowJar)
     inputFile = shadowJar.get().archiveFile
   }
 }
