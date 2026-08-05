@@ -1,10 +1,8 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-  id("net.fabricmc.fabric-loom-remap")
-  kotlin("jvm") version "2.3.21"
-  kotlin("plugin.serialization") version "2.3.21"
+  kotlin("jvm") version "2.4.10"
+  id("net.fabricmc.fabric-loom")
   id("com.gradleup.shadow") version "9.4.1"
+  kotlin("plugin.serialization") version "2.3.21"
   id("com.github.jmongard.git-semver-plugin") version "0.18.0"
 }
 
@@ -13,30 +11,25 @@ semver {
 }
 
 version = semver.infoVersion
-val minecraftVersion: String by project
-val loaderVersion: String by project
-val fabricApiVersion: String by project
-val fabricKotlinVersion: String by project
 
 repositories {
   maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
-val shadowImplementation by configurations.creating {
+val shadowImplementation = configurations.create("shadowImplementation") {
   configurations.implementation {
-    extendsFrom(this@creating)
+    extendsFrom(this@create)
   }
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:$minecraftVersion")
-  mappings(loom.officialMojangMappings())
-  modImplementation("net.fabricmc:fabric-loader:$loaderVersion")
+  minecraft("com.mojang:minecraft:${property("minecraftVersion")}")
+  implementation("net.fabricmc:fabric-loader:${property("loaderVersion")}")
 
-  modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
-  modImplementation("net.fabricmc:fabric-language-kotlin:$fabricKotlinVersion")
+  implementation("net.fabricmc.fabric-api:fabric-api:${property("fabricApiVersion")}")
+  implementation("net.fabricmc:fabric-language-kotlin:${property("fabricKotlinVersion")}")
 
-  modLocalRuntime("me.djtheredstoner:DevAuth-fabric:1.2.2")
+  localRuntime("me.djtheredstoner:DevAuth-fabric:1.2.2")
 
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
   shadowImplementation("io.netty:netty-handler-proxy:4.2.12.Final") {
@@ -51,28 +44,24 @@ loom {
   accessWidenerPath = file("src/main/resources/pwoxy.accessWidener")
 
   runConfigs.named("client") {
-    isIdeConfigGenerated = true
-    vmArgs.addAll(
-      arrayOf(
-        "-Dmixin.debug.export=true",
-        "-Ddevauth.enabled=true",
-        "-Ddevauth.account=main"
-      )
-    )
+    generateRunConfig = true
+    jvmArguments.run {
+      add("-Dmixin.debug.export=true")
+      add("-Ddevauth.enabled=true")
+      add("-Ddevauth.account=main")
+      add("-XX:+AllowEnhancedClassRedefinition")
+      add("-XX:+IgnoreUnrecognizedVMOptions")
+    }
   }
 }
 
 afterEvaluate {
-  loom.runs.named("client") {
-    vmArg("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
+  loom.runConfigs.named("client") {
+    jvmArguments.add("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
   }
 }
 
 tasks {
-  withType<JavaCompile>().configureEach {
-    options.release = 21
-  }
-
   processResources {
     from(rootProject.file("LICENSE")) {
       rename { "${it}_${project.name}" }
@@ -89,8 +78,7 @@ tasks {
   }
 
   shadowJar {
-    archiveClassifier = "dev-shadow"
-    destinationDirectory = layout.buildDirectory.dir("badjars")
+    archiveClassifier = null
 
     configurations = listOf(shadowImplementation)
 
@@ -98,20 +86,8 @@ tasks {
 
     exclude("META-INF/maven/")
   }
-
-  remapJar {
-    archiveClassifier = null
-    inputFile = shadowJar.get().archiveFile
-  }
 }
 
 kotlin {
-  compilerOptions {
-    jvmTarget = JvmTarget.JVM_21
-  }
-}
-
-java {
-  sourceCompatibility = JavaVersion.VERSION_21
-  targetCompatibility = JavaVersion.VERSION_21
+  jvmToolchain(25)
 }

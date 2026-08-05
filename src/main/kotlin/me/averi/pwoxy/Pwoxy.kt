@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.SpriteIconButton
 import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.network.chat.Component.translatable
-import net.minecraft.resources.ResourceLocation.fromNamespaceAndPath
+import net.minecraft.resources.Identifier.fromNamespaceAndPath
 import java.net.InetSocketAddress
 
 object Pwoxy {

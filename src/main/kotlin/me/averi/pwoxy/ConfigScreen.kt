@@ -2,7 +2,7 @@ package me.averi.pwoxy
 
 import me.averi.pwoxy.Pwoxy.mc
 import net.minecraft.ChatFormatting
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
@@ -115,11 +115,11 @@ object ConfigScreen : Screen(translatable("options.pwoxy")) {
     passwordBox.value = Pwoxy.config.password
   }
 
-  override fun render(ctx: GuiGraphics, mouseX: Int, mouseY: Int, tickDelta: Float) {
-    super.render(ctx, mouseX, mouseY, tickDelta)
+  override fun extractRenderState(ctx: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, tickDelta: Float) {
+    super.extractRenderState(ctx, mouseX, mouseY, tickDelta)
 
     listOf(hostBox, loginBox, passwordBox).forEach {
-      ctx.drawString(mc.font, it.message, it.x, it.y - mc.font.lineHeight, 0xff_ffffff.toInt())
+      ctx.text(mc.font, it.message, it.x, it.y - mc.font.lineHeight, 0xff_ffffff.toInt())
     }
   }
 

@@ -1,12 +1,12 @@
 pluginManagement {
 	repositories {
 		maven("https://maven.fabricmc.net/")
-		mavenCentral()
 		gradlePluginPortal()
+		mavenCentral()
 	}
 
 	plugins {
-		id("net.fabricmc.fabric-loom-remap") version providers.gradleProperty("loomVersion")
+		id("net.fabricmc.fabric-loom") version providers.gradleProperty("loomVersion")
 	}
 }
 
